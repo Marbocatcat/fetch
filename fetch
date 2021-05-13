@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# This script will automate fetching config files and pushing them to github through crontab, 
+# Ver 1.0
+# Created by Mar Aspiras
+
+
+
+# VARIABLES
+# where the git init currently stored
+GITFOLDER="/home/centos/lemp_configs/lemp_configs"
+commitMessage="I am a commit scriptbot"
+ORIG="$1"
+TARG="$2"
+
+# FUNCTIONS
+# this function will add, commit, and push to github.
+function git_push() {
+	cd $GITFOLDER
+	git add .
+	git commit -m "$commitMessage"
+	git push origin master
+}
+
+function check() {
+
+	if [[ "$1" -eq "0" ]]; then
+		# if theres no difference then exit code.
+		exit 0
+
+	elif [[ "$1" -eq "1" ]]; then
+		# if theres a difference run the copy and git push function
+		# run the copy functions and push only if the copy is successfull
+		cp --verbose $TARG $ORIG && git_push
+
+	else 
+		# exits command
+		exit 2
+
+	fi
+}
+
+# RUN COMMAND
+diff -q $ORIG $TARG &>> /dev/null
+
+check "$?"
+
+
+
+
